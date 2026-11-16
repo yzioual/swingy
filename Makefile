@@ -22,6 +22,6 @@ clean:
 	$(MVN) clean
 
 softclean:
-	rm src/main/java/com/yzioual/Main.java
+	rm src/main/java/com/yzioual/Main.class
 
 .PHONY: all build console gui clean re main softclean
