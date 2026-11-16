@@ -1,4 +1,5 @@
 package com.yzioual.model;
 
-public class Passive {
+public enum Passive {
+    PERFECT_AIM, THICK_WETSUIT, LAST_BREATH
 }

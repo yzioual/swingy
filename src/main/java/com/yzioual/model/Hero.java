@@ -1,41 +1,97 @@
 package com.yzioual.model;
 
-public enum HeroClass {
-    SPEARFISHER("Spearfisher", Passive.PERFECT_AIM,
-            "Perfect Aim: 15% chance of a double-damage hit",
-            13, 8, 110, 3, 2, 12),
-    OLD_FISHERMAN("Old Fisherman", Passive.THICK_WETSUIT,
-            "Thick Wetsuit: ignores the first hit of each battle",
-            10, 11, 125, 2, 3, 14),
-    FREE_DIVER("Free Diver", Passive.LAST_BREATH,
-            "Last Breath: +30% damage below 50% HP",
-            15, 5, 90, 4, 1, 10);
+import com.yzioual.model.Artifact;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
-    private final String displayName;
-    private final Passive passive;
-    private final String passiveDescription;
-    private final int attack, defense, hitPoints;
-    private final int attackGrowth, defenseGrowth, hitPointsGrowth;
+public class Hero {
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 2, max = 20, message = "Name must be 2 to 20 characters")
+    @Pattern(regexp = "[A-Za-z0-9 _-]*",
+            message = "Name may only contain letters, digits, spaces, '_' and '-'")
+    private final String name;
 
-    HeroClass(String displayName, Passive passive, String passiveDescription,
-              int attack, int defense, int hitPoints,
-              int attackGrowth, int defenseGrowth, int hitPointsGrowth) {
-        this.displayName = displayName;
-        this.passive = passive;
-        this.passiveDescription = passiveDescription;
-        this.attack = attack;
-        this.defense = defense;
-        this.hitPoints = hitPoints;
-        this.attackGrowth = attackGrowth;
-        this.defenseGrowth = defenseGrowth;
-        this.hitPointsGrowth = hitPointsGrowth;
+    @NotNull(message = "Hero class is required")
+    private final HeroClass heroClass;
+
+    @Min(value = 1, message = "Level must be at least 1")
+    private int level;
+
+    @PositiveOrZero(message = "Experience cannot be negative")
+    private int experience;
+
+    private Artifact weapon;
+    private Artifact armor;
+    private Artifact helm;
+
+    private Hero(Builder b) {
+        this.name = b.name;
+        this.heroClass = b.heroClass;
+        this.level = b.level;
+        this.experience = b.experience;
+        this.weapon = b.weapon;
+        this.armor = b.armor;
+        this.helm = b.helm;
     }
 
-    public int attackAt(int level)    { return attack + (level - 1) * attackGrowth; }
-    public int defenseAt(int level)   { return defense + (level - 1) * defenseGrowth; }
-    public int hitPointsAt(int level) { return hitPoints + (level - 1) * hitPointsGrowth; }
+    public static int xpRequiredForLevel(int level) {
+        return level * 1000 + (level - 1) * (level - 1) * 450;
+    }
 
-    public String displayName()        { return displayName; }
-    public Passive passive()           { return passive; }
-    public String passiveDescription() { return passiveDescription; }
+    public int gainExperience(int amount) {
+        experience += amount;
+        int gained = 0;
+        while (experience >= xpRequiredForLevel(level)) {
+            level++;
+            gained++;
+        }
+        return gained;
+    }
+
+    public void equip(Artifact artifact) {
+        switch (artifact.type()) {
+            case WEAPON -> weapon = artifact;
+            case ARMOR  -> armor = artifact;
+            case HELM   -> helm = artifact;
+        }
+    }
+
+    private static int bonus(Artifact a) { return a == null ? 0 : a.bonus(); }
+
+    public int getAttack()     { return heroClass.attackAt(level) + bonus(weapon); }
+    public int getDefense()    { return heroClass.defenseAt(level) + bonus(armor); }
+    public int getHitPoints()  { return heroClass.hitPointsAt(level) + bonus(helm); }
+
+    public String getName()          { return name; }
+    public HeroClass getHeroClass()  { return heroClass; }
+    public int getLevel()            { return level; }
+    public int getExperience()       { return experience; }
+    public int getNextLevelXp()      { return xpRequiredForLevel(level); }
+    public Artifact getWeapon()      { return weapon; }
+    public Artifact getArmor()       { return armor; }
+    public Artifact getHelm()        { return helm; }
+
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private String name;
+        private HeroClass heroClass;
+        private int level = 1;
+        private int experience = 0;
+        private Artifact weapon, armor, helm;
+
+        public Builder name(String name)              { this.name = name; return this; }
+        public Builder heroClass(HeroClass heroClass) { this.heroClass = heroClass; return this; }
+        public Builder level(int level)               { this.level = level; return this; }
+        public Builder experience(int experience)     { this.experience = experience; return this; }
+        public Builder weapon(Artifact weapon)        { this.weapon = weapon; return this; }
+        public Builder armor(Artifact armor)          { this.armor = armor; return this; }
+        public Builder helm(Artifact helm)            { this.helm = helm; return this; }
+
+        public Hero build() { return new Hero(this); }
+    }
 }
