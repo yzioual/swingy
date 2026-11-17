@@ -22,64 +22,84 @@ We could write a Java class that sets the attrbitues via the constructor without
 
 ```java
 public class Agent {
-	private final String name;
-	private final int age;
-	private final int height;
-	private final int weight;
-	private final String location;
-	private final String countryOfOrigin;
+    private final String name;
+    private final int age;
+    private final int height;
+    private final int weight;
+    private final String location;
+    private final String countryOfOrigin;
 
-	public Agent(String name, int age, int height, int weight, String location, String countryOfOrigin) {
-		this.name = name;
-		this.age = age;
-		this.height = height;
+    private Agent(String name, int age, int height, int weight,
+                  String location, String countryOfOrigin) {
+        this.name = name;
+        this.age = age;
+        this.height = height;
+        this.weight = weight;
+        this.location = location;
+        this.countryOfOrigin = countryOfOrigin;
+    }
 
-		// you get the idea!
-	}
+    public String getName() {
+        return this.name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+    public int getHeight() {
+        return height;
+    }
+    
+    public int getWeight() {
+        return weight;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
+    
+    public String getCountryOfOrigin() {
+        return countryOfOrigin;
+    }
+    
+    public static class AgentBuilder {
+        private final String name;
+        private final int age;
+        private final int height;
+        private final int weight;
+        private final String location;
+        private final String countryOfOrigin;
+        
+        public AgentBuilder() {
+        }
+
+        public Agent setName(String name, int age) {
+            this.name = name;
+            return this;
+        }
+
+        public AgentBuilder setAge(int age) {
+            this.age = age;
+            return this;
+        }
+        // need to add all needed settings of course!
+        
+        public Agent build() {
+            return new Agent(this);
+        }
+    }
 }
 
-
-public class AgentBuilder {
-	private final String name;
-	private final int age;
-	private final int height;
-	private final int weight;
-	private final String location;
-	private final String countryOfOrigin;
-
-	public AgentBuilder() {
-	}
-
-	public Agent setName(String name, int age) {
-		this.name = name;
-		return this;
-	}
-
-	public AgentBuilder setAge(int age) {
-		this.age = age;
-		return this;
-	}
-	
-	// need to add all needed settings ofcourse!
-	
-	public Agent build() {
-		return this;
-	}
-}
-
-
-// in Main class
 public class Main {
-	void main() {
-		AgentBuilder agentBuilder = new AgentBuilder();
-		Agent agent = agent
-			.setName("Smith")
-			.setAge(42)
-			.setHeight(180)
-			.build();
+    void main() {
+        Agent agent = new Agent.AgentBuilder()
+                .setName("Smith")
+                .setAge(42)
+                .setHeight(180)
+                .build();
 
-		IO.println(agent.getName()); // displays "Smith"
-		IO.println(agent.getAge()); // displays 42
-	}
+        IO.println(agent.getName()); // displays "Smith"
+        IO.println(agent.getAge()); // displays 42
+    }
 }
 ```
