@@ -5,16 +5,22 @@ One design pattern that was highlighted in this subject is the Builder Pattern.
 ## Let's learn
 
 ### Reasons to use this pattern:
-We should be able to generate complex objects (many attributes) and Immutable objects whenever we want!
-So, there are two reasons to use this desgin pattern: complexity and immutability!
+We should be able to generate complex objects (many attributes) and immutable objects whenever we want!
+So, there are two primary reasons to use this design pattern: **handling complexity** and **ensuring immutability**.
 
 ---
-1. Complex object - has many attributes
-In a case where we would need to pass in a number of attributes to the constructor, and sometimes we don't need n attributes, so technically we could have N constructores to fulfull our constraints. So, for 5 attributes we can have up to 2^5 constructors. DAAAAAMN, that is a lot of constructors. That is when The Builder Pattern comes in handy! Let's see this in action.
 
-2. Immutability
-We could write a Java class that sets the attrbitues via the constructor without any setters, we'd only have getters. The result is an immutable Java object.
+### 1. Complex object - has many attributes (Telescoping Constructor Anti-Pattern)
+In a case where we need to pass a large number of attributes to a constructor, and many of them are optional, we might be tempted to create multiple overloaded constructors to fulfill every combination. For 5 optional attributes, we could theoretically end up with up to $2^5 = 32$ constructors! DAAAAAMN, that is a lot of constructors. This is known as the **Telescoping Constructor** anti-pattern.
 
+Worse yet, in Java, you cannot even define all those constructors if their parameter types overlap (for example, two constructors accepting different single `int` attributes like `height` vs `weight` will cause a duplicate method signature compilation error).
+
+Another common alternative is the **JavaBeans pattern** (a default no-argument constructor with setters). While this eliminates multiple constructors, it introduces a major flaw: the object can be left in an inconsistent, partially constructed state during initialization, and it completely sacrifices immutability.
+
+That is where **The Builder Pattern** comes in handy!
+
+### 2. Immutability
+With the Builder pattern, the target class has no public setters—only getters. Its fields are marked `final` and initialized through a private constructor that takes the builder. Once the object is built, its state can never be modified. It also allows us to perform validation (e.g., checking required fields or valid ranges) before the immutable instance is even created.
 
 ---
 
@@ -22,6 +28,7 @@ We could write a Java class that sets the attrbitues via the constructor without
 
 ```java
 public class Agent {
+    // Immutable fields
     private final String name;
     private final int age;
     private final int height;
@@ -29,14 +36,14 @@ public class Agent {
     private final String location;
     private final String countryOfOrigin;
 
-    private Agent(String name, int age, int height, int weight,
-                  String location, String countryOfOrigin) {
-        this.name = name;
-        this.age = age;
-        this.height = height;
-        this.weight = weight;
-        this.location = location;
-        this.countryOfOrigin = countryOfOrigin;
+    // Private constructor accepting the Builder
+    private Agent(AgentBuilder builder) {
+        this.name = builder.name;
+        this.age = builder.age;
+        this.height = builder.height;
+        this.weight = builder.weight;
+        this.location = builder.location;
+        this.countryOfOrigin = builder.countryOfOrigin;
     }
 
     public String getName() {
@@ -44,36 +51,38 @@ public class Agent {
     }
 
     public int getAge() {
-        return age;
+        return this.age;
     }
+
     public int getHeight() {
-        return height;
+        return this.height;
     }
-    
+
     public int getWeight() {
-        return weight;
+        return this.weight;
     }
-    
+
     public String getLocation() {
-        return location;
+        return this.location;
     }
-    
+
     public String getCountryOfOrigin() {
-        return countryOfOrigin;
+        return this.countryOfOrigin;
     }
-    
+
     public static class AgentBuilder {
-        private final String name;
-        private final int age;
-        private final int height;
-        private final int weight;
-        private final String location;
-        private final String countryOfOrigin;
-        
+        // Builder fields are mutable (not final)
+        private String name;
+        private int age;
+        private int height;
+        private int weight;
+        private String location;
+        private String countryOfOrigin;
+
         public AgentBuilder() {
         }
 
-        public Agent setName(String name, int age) {
+        public AgentBuilder setName(String name) {
             this.name = name;
             return this;
         }
@@ -82,24 +91,44 @@ public class Agent {
             this.age = age;
             return this;
         }
-        // need to add all needed settings of course!
-        
+
+        public AgentBuilder setHeight(int height) {
+            this.height = height;
+            return this;
+        }
+
+        public AgentBuilder setWeight(int weight) {
+            this.weight = weight;
+            return this;
+        }
+
+        public AgentBuilder setLocation(String location) {
+            this.location = location;
+            return this;
+        }
+
+        public AgentBuilder setCountryOfOrigin(String countryOfOrigin) {
+            this.countryOfOrigin = countryOfOrigin;
+            return this;
+        }
+
         public Agent build() {
+            // Optional: validate mandatory fields or constraints here before creation
             return new Agent(this);
         }
     }
 }
 
-public class Main {
-    void main() {
+class Main {
+    public static void main(String[] args) {
         Agent agent = new Agent.AgentBuilder()
                 .setName("Smith")
                 .setAge(42)
                 .setHeight(180)
                 .build();
 
-        IO.println(agent.getName()); // displays "Smith"
-        IO.println(agent.getAge()); // displays 42
+        System.out.println(agent.getName()); // displays "Smith"
+        System.out.println(agent.getAge());  // displays 42
     }
 }
 ```
