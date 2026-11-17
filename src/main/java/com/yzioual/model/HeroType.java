@@ -1,6 +1,6 @@
 package com.yzioual.model;
 
-public enum HeroClass {
+public enum HeroType {
     SPEARFISHER("Spearfisher", Passive.PERFECT_AIM,
             "Perfect Aim: 15% chance of a double-damage hit",
             13, 8, 110, 3, 2, 12),
@@ -19,9 +19,9 @@ public enum HeroClass {
     private final int attack, defense, hitPoints;
     private final int attackGrowth, defenseGrowth, hitPointsGrowth;
 
-    HeroClass(String name, Passive passive, String passiveDescription,
-              int attack, int defense, int hitPoints,
-              int attackGrowth, int defenseGrowth, int hitPointsGrowth) {
+    HeroType(String name, Passive passive, String passiveDescription,
+             int attack, int defense, int hitPoints,
+             int attackGrowth, int defenseGrowth, int hitPointsGrowth) {
         this.name = name;
         this.passive = passive;
         this.passiveDescription = passiveDescription;
