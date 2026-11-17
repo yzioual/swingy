@@ -1,15 +1,15 @@
-package com.yzioual.model;
+package com.yzioual.model.hero;
 
 import com.yzioual.controller.BattleSimulator;
-import com.yzioual.model.maps.Map;
+import com.yzioual.model.villain.Villain;
+import com.yzioual.model.artifact.Artifact;
+import com.yzioual.model.map.Map;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-
-import static com.yzioual.controller.BattleSimulator.HERO_HITS;
 
 public class Hero {
     @NotBlank(message = "Name cannot be blank")

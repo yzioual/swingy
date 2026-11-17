@@ -1,14 +1,13 @@
 package com.yzioual.controller;
 
-import com.yzioual.model.Hero;
-import com.yzioual.model.HeroType;
-import com.yzioual.model.Villain;
-import com.yzioual.model.VillainType;
-import com.yzioual.model.maps.Map;
-import com.yzioual.model.maps.Position;
+import com.yzioual.model.hero.Hero;
+import com.yzioual.model.hero.HeroType;
+import com.yzioual.model.villain.Villain;
+import com.yzioual.model.villain.VillainType;
+import com.yzioual.model.map.Map;
+import com.yzioual.model.map.Position;
 
 import java.util.Random;
-import java.util.Set;
 
 public class BattleSimulator {
     private final Hero hero;

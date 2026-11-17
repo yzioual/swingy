@@ -1,4 +1,4 @@
-package com.yzioual.model.maps;
+package com.yzioual.model.map;
 
 public record Position(int x, int y) {
 	public Position move(Direction direction) {

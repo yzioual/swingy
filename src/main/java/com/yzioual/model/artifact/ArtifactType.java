@@ -1,4 +1,4 @@
-package com.yzioual.model;
+package com.yzioual.model.artifact;
 
 public enum ArtifactType {
     WEAPON("Weapon", "Attack"),

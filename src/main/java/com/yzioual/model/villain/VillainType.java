@@ -1,4 +1,4 @@
-package com.yzioual.model;
+package com.yzioual.model.villain;
 
 public enum VillainType {
     THIN_AIR("Thin Air", 6, 3, 40, 1, "Your chest tightens."),

@@ -1,4 +1,4 @@
-package com.yzioual.model;
+package com.yzioual.model.hero;
 
 public enum HeroType {
     SPEARFISHER("Spearfisher", Passive.PERFECT_AIM,

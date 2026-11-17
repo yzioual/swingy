@@ -1,8 +1,7 @@
-package com.yzioual.model.maps;
+package com.yzioual.model.map;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 public class Map {

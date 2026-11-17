@@ -1,8 +1,8 @@
 package com.yzioual.controller;
 
-import com.yzioual.model.Artifact;
-import com.yzioual.model.ArtifactType;
-import com.yzioual.model.Villain;
+import com.yzioual.model.artifact.Artifact;
+import com.yzioual.model.artifact.ArtifactType;
+import com.yzioual.model.villain.Villain;
 
 import java.util.Optional;
 import java.util.Random;
