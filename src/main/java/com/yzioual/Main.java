@@ -1,25 +1,39 @@
 package com.yzioual;
 
 import com.yzioual.controller.BattleSimulator;
+import com.yzioual.controller.GameController;
+import com.yzioual.model.hero.Hero;
+import com.yzioual.model.hero.HeroType;
+import com.yzioual.model.map.Map;
+import com.yzioual.model.villain.Villain;
+import com.yzioual.view.ConsoleView;
+
+import java.util.Optional;
 
 public class Main {
 	void main() {
-		System.out.println("[DEBUG] Starting Swingy application...");
-		try {
-			System.out.println("[DEBUG] Instantiating BattleSimulator...");
-			BattleSimulator simulator = new BattleSimulator();
-			System.out.println("[DEBUG] Running simulation...");
-			simulator.simulate();
-			System.out.println("[DEBUG] Simulation completed successfully.");
-		} catch (InterruptedException ie) {
-			System.err.println("[DEBUG] InterruptedException caught: caused by pause()");
-			ie.printStackTrace();
-		} catch (Exception exception) {
-			System.err.println("[DEBUG] Something went wrong!");
-			System.err.println("[DEBUG] Exception: " + exception.getClass().getName());
-			System.err.println("[DEBUG] Message: " + exception.getMessage());
-			System.err.println("[DEBUG] Stack trace:");
-			exception.printStackTrace();
+		ConsoleView consoleView = new ConsoleView();
+		Optional<HeroType> type = consoleView.askForHero(HeroType.getListOfHeroTypes());
+		if (type.isEmpty()) {
+			System.out.println("You didn't pick a hero!");
+			return;
 		}
-	}
+
+		HeroType newType = type.get();
+		Hero hero = new Hero.HeroBuilder()
+				.setName("ALI")
+				.setHeroType(newType)
+				.setLevel(1)
+				.build();
+
+		Map map = new Map(hero);
+		GameController gameController = new GameController();
+		BattleSimulator simulator = new BattleSimulator(gameController, consoleView, hero, map);
+
+        try {
+            simulator.simulate();
+        } catch (InterruptedException e) {
+			System.out.println("something went wrong");
+        }
+    }
 }

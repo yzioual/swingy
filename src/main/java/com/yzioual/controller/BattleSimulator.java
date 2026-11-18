@@ -2,18 +2,24 @@ package com.yzioual.controller;
 
 import com.yzioual.model.hero.Hero;
 import com.yzioual.model.hero.HeroType;
+import com.yzioual.model.map.Direction;
 import com.yzioual.model.villain.Villain;
 import com.yzioual.model.villain.VillainType;
 import com.yzioual.model.map.Map;
 import com.yzioual.model.map.Position;
+import com.yzioual.view.ConsoleView;
 
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 public class BattleSimulator {
+    private final GameController gameController;
     private final Hero hero;
-    private Map map;
+    private final Map map;
     private Villain villain;
-
+    private final ConsoleView consoleView;
     public static  final int seed = 3;
     public static final int VILLAIN_PERCENT = 12;
     public static final int[] HERO_HITS  = {14, 11, 16, 12, 15, 13, 14, 17};
@@ -27,44 +33,18 @@ public class BattleSimulator {
             "The Black Deep"
     };
 
-    public BattleSimulator() {
-        System.out.println("[DEBUG] Initializing BattleSimulator...");
-        hero = new Hero.HeroBuilder()
-                .setName("Ali")
-                .setHeroClass(HeroType.SPEARFISHER)
-                .build();
-        System.out.println("[DEBUG] Hero initialized: " + hero.getName() + " (" + hero.getHeroClass() + ")");
-        villain = Villain.spawn(VillainType.THIN_AIR, hero.getLevel());
-        System.out.println("[DEBUG] Villain spawned: " + villain.name() + " [HP=" + villain.hitPoints() + ", ATK=" + villain.attack() + ", DEF=" + villain.defense() + "]");
-        map = new Map(hero.getLevel());
-        System.out.println("[DEBUG] Map created with size " + map.getSize() + " for hero level " + hero.getLevel());
-        System.out.println("[DEBUG] Placing villains on map...");
-        placeVillains();
-        System.out.println("[DEBUG] Finished placing villains. Total villains: " + map.getVillainCells().size());
+    public BattleSimulator(GameController gameController,
+                           ConsoleView consoleView,
+                           Hero hero,
+                           Map map
+    ) {
+        this.consoleView = consoleView;
+        this.hero = hero;
+        this.map = map;
+        this.gameController = gameController;
     }
 
-    private void placeVillains() {
-        Random random = new Random(seed);
-        Position center =  new Position(map.getSize() / 2, map.getSize() / 2);
-        int count = Math.max(1, map.getSize() * 2 * VILLAIN_PERCENT / 100);
-        System.out.println("[DEBUG] placeVillains: Target count=" + count + ", Center=" + center + ", Current villain count=" + map.getVillainCells().size());
 
-        while (map.getVillainCells().size() < count) {
-            Position p = new Position(
-                    random.nextInt(map.getSize()),
-                    random.nextInt(map.getSize())
-            );
-            System.out.println("[DEBUG] placeVillains: Generated candidate position " + p);
-
-            if (!p.equals(center)) {
-                System.out.println("[DEBUG] placeVillains: Attempting to add villain at " + p + " via map.getVillainCells().add()...");
-                map.addVillainCells(p);
-                System.out.println("[DEBUG] placeVillains: Villain added at " + p);
-            } else {
-                System.out.println("[DEBUG] placeVillains: Position " + p + " is center; skipped.");
-            }
-        }
-    }
 
     public static void pause() throws InterruptedException {
         Thread.sleep(400);
@@ -76,30 +56,35 @@ public class BattleSimulator {
     }
 
     public void simulate() throws InterruptedException {
-        String place = DEPTHS[Math.min(hero.getLevel(), DEPTHS.length) - 1];
-        System.out.println("[DEBUG] simulate: Starting simulation at location: " + place);
-        hero.print();
-        map.print();
+        String place = DEPTHS[0];
+        gameController.placeVillains(map);
 
-        pause();
+        System.out.println("villain pos : " + map.getVillainCells());
 
-        System.out.println("\n> w");
-        System.out.println("A " + villain.name() + " blocks your path.");
-        System.out.println("\"" + villain.catchphrase() + "\"");
-        System.out.println("(f)ight or (r)un?  f");
+        while (true) {
+            consoleView.render(place, hero, map, "ready");
+            Optional<Direction> doMove = consoleView.askMove();
+            if (doMove.isEmpty()) {
+                System.out.println("\nSee you soon! Byte Byte!!");
+                break;
+            }
+            GameController.MoveResult result = gameController.moveHero(map, doMove.get());
+            switch (result) {
+                case ERR, RUN -> {
+                }
+                case FIGHT -> {
+                    System.out.println("are we running or fighting boy");
+                }
+                case WIN -> {
+                    System.out.println("Congrats you won");
+                    return;
+                }
+            }
 
-        pause();
-
-        System.out.println("[DEBUG] simulate: Starting battle against " + villain.name() + "...");
-        hero.fight(villain);
-        System.out.println("[DEBUG] simulate: Battle finished.");
-
-        System.out.println("\nVICTORY!  +" + villain.XPRewards() + " XP");
-        System.out.println("Loot: Steel Harpoon (+6 Attack).  Keep it? (y/n)  y");
-        System.out.println("[DEBUG] simulate: Adding " + villain.XPRewards() + " XP to hero...");
-        hero.gainExperience(villain.XPRewards());
-        System.out.println();
-        hero.print();
-        System.out.println("[DEBUG] simulate: Simulation complete.");
+            boolean contact = gameController.advanceVillains(map);
+            if (contact) {
+                System.out.println("are we running or fighting boy");
+            }
+        }
     }
 }

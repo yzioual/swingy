@@ -1,6 +1,13 @@
 package com.yzioual.model.villain;
 
-public record Villain(String name, int attack, int defense, int hitPoints, int power, int XPRewards, String catchphrase) {
+public record Villain(String name,
+                      int attack,
+                      int defense,
+                      int hitPoints,
+                      int power,
+                      int XPRewards,
+                      String catchphrase
+) {
     public static Villain spawn(VillainType type, int heroLevel) {
         int scale = heroLevel - 1;
 
