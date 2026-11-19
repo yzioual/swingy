@@ -17,9 +17,9 @@ public class Hero {
     @NotNull(message = "Hero class is required")
     private final HeroType heroType;
     @Min(value = 1, message = "Level must be at least 1")
-    private int level;
+    private int level = 1;
     @PositiveOrZero(message = "Experience cannot be negative")
-    private int experience;
+    private int experience = 0;
     private Artifact weapon;
     private Artifact armor;
     private Artifact helm;
@@ -82,11 +82,6 @@ public class Hero {
 
         public HeroBuilder setHeroType(HeroType heroType) {
             this.heroType = heroType;
-            return this;
-        }
-
-        public HeroBuilder setLevel(int level) {
-            this.level = level;
             return this;
         }
 

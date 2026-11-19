@@ -181,4 +181,16 @@ public class ConsoleView {
         }
         return Optional.of(listOfHeroes.get(pick.getAsInt() - 1));
     }
+
+    public Optional<String> askHeroName() {
+        System.out.print("Name your hero > ");
+        if (!scanner.hasNextLine()) {
+            return Optional.empty();
+        }
+        return Optional.of(scanner.nextLine().trim());
+    }
+
+    public void showErrors(List<String> errors) {
+        errors.forEach(e -> System.out.println(color("\033[31m", "  x " + e)));
+    }
 }
