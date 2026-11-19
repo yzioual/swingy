@@ -1,5 +1,6 @@
 package com.yzioual.controller;
 
+import com.yzioual.model.artifact.Artifact;
 import com.yzioual.model.hero.Hero;
 import com.yzioual.model.hero.Passive;
 import com.yzioual.model.map.Direction;
@@ -235,10 +236,22 @@ public class GameController {
         int xp = result.outcome() == BattleOutcome.SMASH
                 ? villain.XPRewards() * 3 / 2 : villain.XPRewards();
         int levelsGained = hero.gainExperience(xp);
-        status = "Victory! +" + xp + " XP" + (result.didHeroWin() ? " (flawless)" : "");
+        status = "Victory! +" + xp + " XP" + (result.didHeroSmash() ? " (flawless)" : "");
 
         if (levelsGained > 0) {
             status += "  LEVEL UP! You are now level " + hero.getLevel() + ".";
+        }
+
+        Optional<Artifact> drop = LootGenerator.roll(villain, random);
+        if (drop.isPresent()) {
+            Artifact artifact = drop.get();
+            Artifact current = hero.getEquipped(artifact.type());
+            if (consoleView.askEquip(artifact, current)) {
+                hero.equip(artifact);
+                status += "  Equipped " + artifact.name() + "!";
+            } else {
+                status += "  Left " + artifact.name() + ".";
+            }
         }
         if (isOnBorder()) {
             return BattleOutcome.WIN;

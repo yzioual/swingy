@@ -2,6 +2,7 @@ package com.yzioual.model.hero;
 
 import com.yzioual.model.villain.Villain;
 import com.yzioual.model.artifact.Artifact;
+import com.yzioual.model.artifact.ArtifactType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -65,6 +66,17 @@ public class Hero {
     public int getLevel()            { return level; }
     public int getExperience()       { return experience; }
     public int getNextLevelXp()      { return xpRequiredForLevel(level); }
+    public Artifact getWeapon()      { return weapon; }
+    public Artifact getArmor()       { return armor; }
+    public Artifact getHelm()        { return helm; }
+
+    public Artifact getEquipped(ArtifactType type) {
+        return switch (type) {
+            case WEAPON -> weapon;
+            case ARMOR  -> armor;
+            case HELM   -> helm;
+        };
+    }
 
     public static class HeroBuilder {
         private String name;
@@ -82,6 +94,21 @@ public class Hero {
 
         public HeroBuilder setHeroType(HeroType heroType) {
             this.heroType = heroType;
+            return this;
+        }
+
+        public HeroBuilder setWeapon(Artifact weapon) {
+            this.weapon = weapon;
+            return this;
+        }
+
+        public HeroBuilder setArmor(Artifact armor) {
+            this.armor = armor;
+            return this;
+        }
+
+        public HeroBuilder setHelm(Artifact helm) {
+            this.helm = helm;
             return this;
         }
 

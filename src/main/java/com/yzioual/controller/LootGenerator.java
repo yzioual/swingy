@@ -20,10 +20,12 @@ public final class LootGenerator {
     private LootGenerator() {
     }
 
+    public static Optional<Artifact> roll(Villain villain) {
+        return roll(villain, new Random());
+    }
+
     public static Optional<Artifact> roll(Villain villain, Random random) {
-        System.out.println("[DEBUG] LootGenerator.roll: rolling for villain=" + villain.name() + " (power=" + villain.power() + ")");
-        if (random.nextInt(100) >= DROP_PERCENT) {
-            System.out.println("[DEBUG] LootGenerator.roll: no drop (roll missed " + DROP_PERCENT + "% drop chance)");
+        if (villain == null || random.nextInt(100) >= DROP_PERCENT) {
             return Optional.empty();
         }
         int tier = villain.power() <= 1 ? 0 : villain.power() <= 3 ? 1 : 2;
@@ -40,8 +42,6 @@ public final class LootGenerator {
             case HELM   -> HELM_BONUS[tier];
         };
         int bonus = base + random.nextInt(base / 4 + 1);   // a little luck on top
-        Artifact artifact = new Artifact(names[tier], type, bonus);
-        System.out.println("[DEBUG] LootGenerator.roll: dropped artifact=" + artifact);
-        return Optional.of(artifact);
+        return Optional.of(new Artifact(names[tier], type, bonus));
     }
 }

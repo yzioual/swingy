@@ -1,5 +1,6 @@
 package com.yzioual.view;
 
+import com.yzioual.model.artifact.Artifact;
 import com.yzioual.model.hero.Hero;
 import com.yzioual.model.hero.HeroType;
 import com.yzioual.model.map.Direction;
@@ -96,6 +97,32 @@ public class ConsoleView {
         }
     }
 
+    public boolean askEquip(Artifact dropped, Artifact current) {
+        System.out.println();
+        System.out.println("Loot dropped: " + dropped);
+        if (current != null) {
+            System.out.println("Currently equipped: " + current);
+        } else {
+            System.out.println("Currently equipped: None");
+        }
+        while (true) {
+            System.out.print("Keep it? (y/n) > ");
+            if (!scanner.hasNextLine()) {
+                return false;
+            }
+            String input = scanner.nextLine().trim().toLowerCase();
+            switch (input) {
+                case "y", "yes" -> {
+                    return true;
+                }
+                case "n", "no" -> {
+                    return false;
+                }
+                default -> System.out.println("Please type y or n.");
+            }
+        }
+    }
+
     private String cell(Map map, Position p, int size) {
         if (p.equals(map.getHeroPosition())) {
             return color(HERO, "@") + " ";
@@ -156,6 +183,9 @@ public class ConsoleView {
         System.out.println("   Attack:     " + hero.getAttack());
         System.out.println("   Defense:    " + hero.getDefense());
         System.out.println("   Hit Points: " + hero.getHitPoints());
+        System.out.println("   Weapon:     " + (hero.getWeapon() != null ? hero.getWeapon() : "None"));
+        System.out.println("   Armor:      " + (hero.getArmor() != null ? hero.getArmor() : "None"));
+        System.out.println("   Helm:       " + (hero.getHelm() != null ? hero.getHelm() : "None"));
     }
 
     /**
