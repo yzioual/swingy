@@ -1,11 +1,9 @@
 package com.yzioual;
 
-import com.yzioual.controller.BattleSimulator;
 import com.yzioual.controller.GameController;
 import com.yzioual.model.hero.Hero;
 import com.yzioual.model.hero.HeroType;
 import com.yzioual.model.map.Map;
-import com.yzioual.model.villain.Villain;
 import com.yzioual.view.ConsoleView;
 
 import java.util.Optional;
@@ -26,14 +24,7 @@ public class Main {
 				.setLevel(1)
 				.build();
 
-		Map map = new Map(hero);
-		GameController gameController = new GameController();
-		BattleSimulator simulator = new BattleSimulator(gameController, consoleView, hero, map);
-
-        try {
-            simulator.simulate();
-        } catch (InterruptedException e) {
-			System.out.println("something went wrong");
-        }
+		GameController gameController = new GameController(consoleView, hero);
+		gameController.play();
     }
 }

@@ -96,14 +96,6 @@ public class ConsoleView {
         }
     }
 
-    public void pause(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
     private String cell(Map map, Position p, int size) {
         if (p.equals(map.getHeroPosition())) {
             return color(HERO, "@") + " ";
@@ -151,6 +143,19 @@ public class ConsoleView {
             }
             System.out.println("Please type a number from " + 0 + " to " + max + ".");
         }
+    }
+
+    public void waitForEnter() {
+        System.out.print("Press Enter to continue... ");
+        if (scanner.hasNextLine()) scanner.nextLine();
+    }
+
+    public void showHero(Hero hero) {
+        System.out.println("\nYour stats:");
+        System.out.println("    Name:      " + hero.getName());
+        System.out.println("   Attack:     " + hero.getAttack());
+        System.out.println("   Defense:    " + hero.getDefense());
+        System.out.println("   Hit Points: " + hero.getHitPoints());
     }
 
     /**

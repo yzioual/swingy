@@ -23,6 +23,7 @@ public class Map {
         return (level - 1) * 5 + 10 - (level % 2);
     }
     public Position getHeroPosition() { return this.currentHeroPosition; }
+    public Position getHeroPreviousPosition() { return this.previousHeroPosition; }
     public void retreat() { currentHeroPosition = previousHeroPosition; }
     public int getSize() { return size; }
     public Set<Position> getVillainCells() { return Collections.unmodifiableSet(villainCells); }
@@ -32,6 +33,7 @@ public class Map {
     }
     public boolean hasVillainAt(Position position) { return villainCells.contains(position); }
     public void addVillainCells(Position position) { villainCells.add(position); }
+    public void removeVillainAt(Position position) { villainCells.remove(position); }
 
     public void setCurrentPosition(Position position) { currentHeroPosition = position; }
     public void setPreviousHeroPosition(Position position) { previousHeroPosition = position; }
