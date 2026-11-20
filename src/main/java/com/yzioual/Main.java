@@ -1,48 +1,53 @@
 package com.yzioual;
 
 import com.yzioual.controller.GameController;
-import com.yzioual.model.hero.Hero;
-import com.yzioual.model.hero.HeroType;
-//import com.yzioual.validation.ValidationService;
-import com.yzioual.view.ConsoleView;
+import com.yzioual.view.ViewMode;
 
-import java.util.List;
-import java.util.Optional;
+import java.awt.GraphicsEnvironment;
+import java.util.Scanner;
 
 public class Main {
 
-	void main() {
-		ConsoleView consoleView = new ConsoleView();
-		Optional<HeroType> type = consoleView.askForHero(HeroType.getListOfHeroTypes());
-		if (type.isEmpty()) {
-			System.out.println("You didn't pick a hero! Try again!");
-			return;
+	public static void main(String[] args) {
+		String mode = null;
+		if (args != null && args.length > 0) {
+			mode = args[0].trim().toLowerCase();
 		}
-		Hero hero = createHero(consoleView, type.get());
-		if (hero == null) return;
-		new GameController(consoleView, hero).play();
+		if (mode == null || (!mode.equals("console") && !mode.equals("gui"))) {
+			mode = askMode();
+		}
+
+		ViewMode initialMode = "gui".equals(mode) ? ViewMode.GUI : ViewMode.CONSOLE;
+		if (initialMode == ViewMode.GUI && GraphicsEnvironment.isHeadless()) {
+			System.out.println("No display detected (headless environment). Falling back to console mode.");
+			initialMode = ViewMode.CONSOLE;
+		}
+
+		new GameController(initialMode).play();
 	}
 
-	/** Keeps asking until the name passes validation. Returns null if input closes. */
-	private static Hero createHero(ConsoleView view, HeroType type) {
+	void main() {
+		main(new String[0]);
+	}
+
+	private static String askMode() {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("=== CHOOSE MODE ===");
+		System.out.println("1) Console");
+		System.out.println("2) GUI");
 		while (true) {
-			Optional<String> name = view.askHeroName();
-			if (name.isEmpty()) {
-				return null;
+			System.out.print("Select mode (1 or 2) > ");
+			if (!scanner.hasNextLine()) {
+				return "console";
 			}
-
-			return new Hero.HeroBuilder()
-					.setName(name.get())
-					.setHeroType(type)
-					.build();                         // level 1, XP 0 by default
-
-			/*
-			List<String> errors = ValidationService.validate(hero);
-			if (errors.isEmpty()) {
-				return hero;
+			String input = scanner.nextLine().trim().toLowerCase();
+			if (input.equals("1") || input.equals("console") || input.equals("c")) {
+				return "console";
 			}
-			view.showErrors(errors);
-			 */
+			if (input.equals("2") || input.equals("gui") || input.equals("g")) {
+				return "gui";
+			}
+			System.out.println("Please type 1 for Console or 2 for GUI.");
 		}
 	}
 }

@@ -49,32 +49,48 @@ public class ConsoleView {
         System.out.println(status.isEmpty() ? " " : status);
     }
 
-    public Optional<Direction> askMove() {
+    public enum ActionType { MOVE, SWITCH_TO_GUI, QUIT }
+    public record ConsoleAction(ActionType type, Direction direction) {
+        public static ConsoleAction move(Direction d) { return new ConsoleAction(ActionType.MOVE, d); }
+        public static ConsoleAction switchToGui() { return new ConsoleAction(ActionType.SWITCH_TO_GUI, null); }
+        public static ConsoleAction quit() { return new ConsoleAction(ActionType.QUIT, null); }
+    }
+
+    public ConsoleAction askMoveAction() {
         while (true) {
-            System.out.print("Move (w/a/s/d), q to quit > ");
+            System.out.print("Move (w/a/s/d), 'v' to switch to GUI, 'q' to quit > ");
             if (!scanner.hasNextLine()) {
-                return Optional.empty();
+                return ConsoleAction.quit();
             }
 
-            switch (scanner.nextLine().trim().toLowerCase()) {
-                case "w" -> {
-                    return Optional.of(Direction.NORTH);
+            String line = scanner.nextLine().trim().toLowerCase();
+            switch (line) {
+                case "w", "up" -> {
+                    return ConsoleAction.move(Direction.NORTH);
                 }
-                case "d" -> {
-                    return Optional.of(Direction.EAST);
+                case "d", "right" -> {
+                    return ConsoleAction.move(Direction.EAST);
                 }
-                case "s" -> {
-                    return Optional.of(Direction.SOUTH);
+                case "s", "down" -> {
+                    return ConsoleAction.move(Direction.SOUTH);
                 }
-                case "a" -> {
-                    return Optional.of(Direction.WEST);
+                case "a", "left" -> {
+                    return ConsoleAction.move(Direction.WEST);
                 }
-                case "q" -> {
-                    return Optional.empty();
+                case "v", "gui", "switch", "g" -> {
+                    return ConsoleAction.switchToGui();
                 }
-                default -> System.out.println("Please type w, a, s, d or q.");
+                case "q", "quit", "exit" -> {
+                    return ConsoleAction.quit();
+                }
+                default -> System.out.println("Please type w, a, s, d (move), v (switch to GUI), or q (quit).");
             }
         }
+    }
+
+    public Optional<Direction> askMove() {
+        ConsoleAction action = askMoveAction();
+        return action.type() == ActionType.MOVE ? Optional.of(action.direction()) : Optional.empty();
     }
 
     public boolean askFight(String message) {
@@ -222,5 +238,61 @@ public class ConsoleView {
 
     public void showErrors(List<String> errors) {
         errors.forEach(e -> System.out.println(color("\033[31m", "  x " + e)));
+    }
+
+    public enum StartChoice { CREATE, SELECT, SWITCH_TO_GUI, QUIT }
+
+    public StartChoice askStartOption(boolean hasSavedHeroes) {
+        System.out.println("\n=== SWINGY: OCEAN DEPTHS ===");
+        System.out.println("1) Create a new hero");
+        if (hasSavedHeroes) {
+            System.out.println("2) Select a saved hero");
+        }
+        System.out.println("3) Switch to GUI mode");
+        System.out.println("0) Quit");
+
+        while (true) {
+            System.out.print("Select option > ");
+            if (!scanner.hasNextLine()) {
+                return StartChoice.QUIT;
+            }
+            String input = scanner.nextLine().trim().toLowerCase();
+            switch (input) {
+                case "1", "create" -> { return StartChoice.CREATE; }
+                case "2", "select" -> {
+                    if (hasSavedHeroes) return StartChoice.SELECT;
+                    System.out.println("No saved heroes available. Choose 1, 3 or 0.");
+                }
+                case "3", "v", "gui", "switch", "g" -> { return StartChoice.SWITCH_TO_GUI; }
+                case "0", "q", "quit", "exit" -> { return StartChoice.QUIT; }
+                default -> System.out.println("Please select 1, " + (hasSavedHeroes ? "2, " : "") + "3 or 0.");
+            }
+        }
+    }
+
+    public Optional<Hero> askSelectHero(List<Hero> heroes) {
+        if (heroes == null || heroes.isEmpty()) {
+            System.out.println("\nNo saved heroes found.");
+            return Optional.empty();
+        }
+        System.out.println("\n--- Saved Heroes ---");
+        for (int i = 0; i < heroes.size(); i++) {
+            Hero h = heroes.get(i);
+            System.out.printf("%d) %s (%s) - Lv %d | XP %d/%d | ATK %d | DEF %d | HP %d%n",
+                    (i + 1), h.getName(), h.getHeroType().getName(),
+                    h.getLevel(), h.getExperience(), h.getNextLevelXp(),
+                    h.getAttack(), h.getDefense(), h.getHitPoints());
+            System.out.printf("   Weapon: %s | Armor: %s | Helm: %s%n",
+                    h.getWeapon() != null ? h.getWeapon().toString() : "None",
+                    h.getArmor() != null ? h.getArmor().toString() : "None",
+                    h.getHelm() != null ? h.getHelm().toString() : "None");
+        }
+        System.out.println("0) Back / Cancel");
+
+        OptionalInt pick = readNumber(heroes.size());
+        if (pick.isEmpty() || pick.getAsInt() == 0) {
+            return Optional.empty();
+        }
+        return Optional.of(heroes.get(pick.getAsInt() - 1));
     }
 }

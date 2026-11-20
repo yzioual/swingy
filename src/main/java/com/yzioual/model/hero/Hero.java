@@ -97,6 +97,16 @@ public class Hero {
             return this;
         }
 
+        public HeroBuilder setLevel(int level) {
+            this.level = level;
+            return this;
+        }
+
+        public HeroBuilder setExperience(int experience) {
+            this.experience = experience;
+            return this;
+        }
+
         public HeroBuilder setWeapon(Artifact weapon) {
             this.weapon = weapon;
             return this;
