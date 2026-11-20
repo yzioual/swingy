@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import jakarta.validation.ConstraintViolationException;
 
 public class GUIView {
     private static final Color BG        = new Color(0x1B1B2F);
@@ -415,6 +416,11 @@ public class GUIView {
                 name.requestFocusInWindow();
                 return false;
             }
+            if (!n.matches("[A-Za-z0-9 _-]*")) {
+                error.setText("Name may only contain letters, digits, spaces, '_' and '-'");
+                name.requestFocusInWindow();
+                return false;
+            }
             chosen[0] = n;
             return true;
         };
@@ -427,10 +433,14 @@ public class GUIView {
                     name.selectAll();
                 }, onSwitchToConsole);
         if (r == 0 && list.selected() != null) {
-            return new Hero.HeroBuilder()
-                    .setName(chosen[0])
-                    .setHeroType(list.selected())
-                    .build();
+            try {
+                return new Hero.HeroBuilder()
+                        .setName(chosen[0])
+                        .setHeroType(list.selected())
+                        .build();
+            } catch (ConstraintViolationException e) {
+                return null;
+            }
         } else if (onSwitchToConsole != null && r == 1) {
             onSwitchToConsole.run();
             return null;

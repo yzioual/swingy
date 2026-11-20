@@ -13,6 +13,8 @@ import com.yzioual.model.villain.VillainType;
 import com.yzioual.view.ConsoleView;
 import com.yzioual.view.GUIView;
 import com.yzioual.view.ViewMode;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import javax.swing.JOptionPane;
 import java.awt.GraphicsEnvironment;
@@ -143,13 +145,23 @@ public class GameController {
             case CREATE -> {
                 Optional<HeroType> type = consoleView.askForHero(HeroType.getListOfHeroTypes());
                 if (type.isEmpty()) return;
-                Optional<String> name = consoleView.askHeroName();
-                if (name.isEmpty()) return;
-                hero = new Hero.HeroBuilder()
-                        .setName(name.get())
-                        .setHeroType(type.get())
-                        .build();
-                db.saveHero(hero);
+                while (true) {
+                    Optional<String> name = consoleView.askHeroName();
+                    if (name.isEmpty()) return;
+                    try {
+                        hero = new Hero.HeroBuilder()
+                                .setName(name.get())
+                                .setHeroType(type.get())
+                                .build();
+                        db.saveHero(hero);
+                        break;
+                    } catch (ConstraintViolationException e) {
+                        List<String> errors = e.getConstraintViolations().stream()
+                                .map(ConstraintViolation::getMessage)
+                                .toList();
+                        consoleView.showErrors(errors);
+                    }
+                }
             }
             case SELECT -> {
                 Optional<Hero> picked = consoleView.askSelectHero(savedHeroes);

@@ -3,6 +3,11 @@ package com.yzioual.model.hero;
 import com.yzioual.model.villain.Villain;
 import com.yzioual.model.artifact.Artifact;
 import com.yzioual.model.artifact.ArtifactType;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +15,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
+import java.util.Set;
+
 public class Hero {
+    private static final ValidatorFactory FACTORY = Validation.buildDefaultValidatorFactory();
+    private static final Validator VALIDATOR = FACTORY.getValidator();
+
     @NotBlank(message = "Name cannot be blank")
     @Size(min = 2, max = 20, message = "Name must be 2 to 20 characters")
     @Pattern(regexp = "[A-Za-z0-9 _-]*", message = "Name may only contain letters, digits, spaces, '_' and '-'")
@@ -33,6 +43,14 @@ public class Hero {
         this.weapon = heroBuilder.weapon;
         this.armor = heroBuilder.armor;
         this.helm = heroBuilder.helm;
+    }
+
+    public static Validator getValidator() {
+        return VALIDATOR;
+    }
+
+    public Set<ConstraintViolation<Hero>> validate() {
+        return VALIDATOR.validate(this);
     }
 
     public static int xpRequiredForLevel(int level) {
@@ -122,9 +140,17 @@ public class Hero {
             return this;
         }
 
+        public Set<ConstraintViolation<Hero>> validate() {
+            return VALIDATOR.validate(new Hero(this));
+        }
+
         public Hero build() {
-            // TODO: validate attributes before returning
-            return new Hero(this);
+            Hero hero = new Hero(this);
+            Set<ConstraintViolation<Hero>> violations = VALIDATOR.validate(hero);
+            if (!violations.isEmpty()) {
+                throw new ConstraintViolationException(violations);
+            }
+            return hero;
         }
     }
 }
