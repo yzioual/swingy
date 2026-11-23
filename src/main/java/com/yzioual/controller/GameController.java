@@ -42,7 +42,7 @@ public class GameController {
     private final DatabaseManager db;
     private final ConsoleView consoleView;
     private final GUIView guiView;
-    private final Random random = new Random(seed);
+    private final Random random = new Random();
     private final Object lock = new Object();
 
     private ViewMode currentMode;
@@ -327,8 +327,7 @@ public class GameController {
         }
 
         if (!wantsFight) {
-            boolean cellFree = !map.hasVillainAt(map.getHeroPreviousPosition());
-            if (cellFree && random.nextBoolean()) {
+            if (random.nextBoolean()) {
                 map.retreat();
                 this.status = "You slipped back to your previous cell";
                 return BattleOutcome.ONGOING;
@@ -345,7 +344,7 @@ public class GameController {
         BattleResult result = this.fight();
         if (!result.didHeroWin()) {
             if (isGui) {
-                guiView.showBattleResult(result.log(), false, false, 0, 0);
+                guiView.showBattleResult(result.log(), false, false, 0, hero.getLevel(), 0);
             } else {
                 result.log().forEach(System.out::println);
                 consoleView.waitForEnter();
@@ -360,7 +359,7 @@ public class GameController {
         db.saveHero(hero);
 
         if (isGui) {
-            guiView.showBattleResult(result.log(), true, result.didHeroSmash(), xp, levelsGained);
+            guiView.showBattleResult(result.log(), true, result.didHeroSmash(), xp, hero.getLevel(), levelsGained);
         } else {
             result.log().forEach(System.out::println);
             consoleView.waitForEnter();
@@ -437,10 +436,7 @@ public class GameController {
                 }
             }
         } else {
-            System.out.println("You drowned. Your family starves.");
-            System.out.print("Try again? (y/n) > ");
-            Scanner sc = new Scanner(System.in);
-            if (sc.hasNextLine() && sc.nextLine().trim().equalsIgnoreCase("y")) {
+            if (consoleView.askRetry()) {
                 gameOver = false;
                 day = 1;
                 hero = null;

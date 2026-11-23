@@ -18,7 +18,7 @@ public class ConsoleView {
     private final boolean ansi;
 
     public ConsoleView() {
-        this.ansi = System.console() != null && System.console().isTerminal();
+        this.ansi = System.console() != null;
     }
 
     public void render(String depth, Hero hero, Map map, String status) {
@@ -41,8 +41,7 @@ public class ConsoleView {
 
         System.out.println();
         System.out.println(color(HERO, "@") + " you   "
-                + color(TIER[1], "1") + color(TIER[2], "2")
-                + color(TIER[3], "3") + color(TIER[4], "4") + " fears (by power)   "
+                + color(TIER[4], "V") + " fears/villains   "
                 + color(DIM, ":") + " shore");
         System.out.println();
         System.out.println(status.isEmpty() ? " " : status);
@@ -90,6 +89,40 @@ public class ConsoleView {
     public Optional<Direction> askMove() {
         ConsoleAction action = askMoveAction();
         return action.type() == ActionType.MOVE ? Optional.of(action.direction()) : Optional.empty();
+    }
+
+    public void showEncounter(String villainName, String catchphrase) {
+        System.out.println("\nA " + villainName + " blocks your way!");
+        System.out.println("\"" + catchphrase + "\"");
+    }
+
+    public void showEscapeFailed() {
+        System.out.println("You couldn't escape! YOU MUST FIGHT BUDDY!");
+    }
+
+    public void showBattleLog(List<String> log) {
+        if (log != null) {
+            log.forEach(System.out::println);
+        }
+    }
+
+    public void showShoreReached(Hero hero) {
+        System.out.println("\nYou reached the shore with your fish! Your family eats tonight.");
+        showHero(hero);
+    }
+
+    public boolean askRetry() {
+        System.out.println("You drowned. Your family starves.");
+        while (true) {
+            System.out.print("Try again? (y/n) > ");
+            if (!scanner.hasNextLine()) {
+                return false;
+            }
+            String line = scanner.nextLine().trim().toLowerCase();
+            if (line.equals("y") || line.equals("yes")) return true;
+            if (line.equals("n") || line.equals("no")) return false;
+            System.out.println("Please type y or n.");
+        }
     }
 
     public boolean askFight(String message) {

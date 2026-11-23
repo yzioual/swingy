@@ -282,7 +282,7 @@ public class GUIView {
                 new String[]{"Fight", "Run"}, 1, null) == 0;
     }
 
-    public void showBattleResult(List<String> log, boolean won, boolean smash, int xp, int levelsGained) {
+    public void showBattleResult(List<String> log, boolean won, boolean smash, int xp, int currentLevel, int levelsGained) {
         if (frame == null) return;
         Stack body = new Stack();
         int gap = 0;
@@ -306,7 +306,7 @@ public class GUIView {
         if (won) {
             body.row(text("+" + xp + " XP" + (smash ? "  ·  flawless smash" : ""), 340, BOLD, ACCENT), gap);
             if (levelsGained > 0) {
-                body.row(text("Level up! You reached level " + levelsGained + "!", 340, BOLD, TEXT), 4);
+                body.row(text("Level up! You reached level " + currentLevel + "!", 340, BOLD, TEXT), 4);
             }
         } else {
             body.row(text("You were defeated in battle...", 340, REG, MUTED), gap);
@@ -398,18 +398,24 @@ public class GUIView {
         final String[] chosen = new String[1];
         BooleanSupplier validate = () -> {
             String n = name.getText().trim();
-            if (n.length() < 2 || n.length() > 20) {
-                error.setText("Hero name must be between 2 and 20 characters.");
+            HeroType selectedType = list.selected();
+            if (selectedType == null) {
+                error.setText("Hero class is required.");
+                return false;
+            }
+            try {
+                new Hero.HeroBuilder()
+                        .setName(n)
+                        .setHeroType(selectedType)
+                        .build();
+                chosen[0] = n;
+                return true;
+            } catch (ConstraintViolationException e) {
+                String firstError = e.getConstraintViolations().iterator().next().getMessage();
+                error.setText(firstError);
                 name.requestFocusInWindow();
                 return false;
             }
-            if (!n.matches("[A-Za-z0-9 _-]*")) {
-                error.setText("Name may only contain letters, digits, spaces, '_' and '-'");
-                name.requestFocusInWindow();
-                return false;
-            }
-            chosen[0] = n;
-            return true;
         };
         String[] labels = onSwitchToConsole != null
                 ? new String[]{"Start", "Console (Ctrl+S)", "Cancel"}
@@ -944,7 +950,8 @@ public class GUIView {
                         44, (float) (cy - 4));
                 g.setFont(SMALL);
                 g.setColor(MUTED);
-                String stats = "ATK " + h.getAttack() + " · DEF " + h.getDefense() + " · HP " + h.getHitPoints();
+                String stats = "ATK " + h.getAttack() + " · DEF " + h.getDefense() + " · HP " + h.getHitPoints()
+                        + " · XP " + h.getExperience() + "/" + h.getNextLevelXp();
                 g.drawString(stats, 44, (float) (cy + 13));
             }
             g.dispose();
