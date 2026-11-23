@@ -18,7 +18,6 @@ public class ConsoleView {
     private final boolean ansi;
 
     public ConsoleView() {
-        // isTerminal() is false in IDE consoles and when output is piped
         this.ansi = System.console() != null && System.console().isTerminal();
     }
 
@@ -166,9 +165,6 @@ public class ConsoleView {
     }
 
 
-    /**
-     * Re-asks until the input is a whole number in [min, max]. Empty means input closed.
-     * */
     private OptionalInt readNumber(int max) {
         while (true) {
             System.out.print("Type > ");
@@ -181,9 +177,7 @@ public class ConsoleView {
                 if (value >= 0 && value <= max) {
                     return OptionalInt.of(value);
                 }
-            } catch (NumberFormatException ignored) {
-                // falls through to the message below
-            }
+            } catch (NumberFormatException ignored) {/* falls through to the message below */}
             System.out.println("Please type a number from " + 0 + " to " + max + ".");
         }
     }
@@ -204,9 +198,6 @@ public class ConsoleView {
         System.out.println("   Helm:       " + (hero.getHelm() != null ? hero.getHelm() : "None"));
     }
 
-    /**
-     * Shows every hero type and returns the one the player picks, or empty if they go back.
-     * */
     public Optional<HeroType> askForHero(List<HeroType> listOfHeroes) {
         System.out.println();
         System.out.println("--- Choose a hero type ---");

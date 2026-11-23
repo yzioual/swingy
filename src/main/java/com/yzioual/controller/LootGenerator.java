@@ -17,12 +17,7 @@ public final class LootGenerator {
     private static final int[] ARMOR_BONUS  = {2, 4, 7};
     private static final int[] HELM_BONUS   = {10, 20, 35};
 
-    private LootGenerator() {
-    }
-
-    public static Optional<Artifact> roll(Villain villain) {
-        return roll(villain, new Random());
-    }
+    private LootGenerator() {}
 
     public static Optional<Artifact> roll(Villain villain, Random random) {
         if (villain == null || random.nextInt(100) >= DROP_PERCENT) {
@@ -41,7 +36,7 @@ public final class LootGenerator {
             case ARMOR  -> ARMOR_BONUS[tier];
             case HELM   -> HELM_BONUS[tier];
         };
-        int bonus = base + random.nextInt(base / 4 + 1);   // a little luck on top
+        int bonus = base + random.nextInt(base / 4 + 1);   /* a little luck on top :) */
         return Optional.of(new Artifact(names[tier], type, bonus));
     }
 }

@@ -25,23 +25,18 @@ public enum VillainType {
     public String getName() {
         return this.name;
     }
-
     public int getAttack() {
         return this.attack;
     }
-
     public String getCatchphrase() {
         return this.catchphrase;
     }
-
     public int getDefense() {
         return this.defense;
     }
-
     public int getHitPoints() {
         return this.hitPoints;
     }
-
     public int getPower() {
         return this.power;
     }

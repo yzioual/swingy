@@ -4,18 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-/** Draws the map at native pixel size. The caller scales it up with nearest-neighbor. */
 final class PixelArt {
-
     static final int TILE = 8;
-
     private static final Color WATER_A   = new Color(0x2B5F8A);
     private static final Color WATER_B   = new Color(0x2F6896);
     private static final Color WAVE      = new Color(0x6FA8D6);
     private static final Color SAND      = new Color(0xE3C98A);
     private static final Color SAND_DARK = new Color(0xB8975A);
 
-    // '.' = transparent
     private static final String[] HERO = {
             "..hhhh..",
             ".hvvvvh.",

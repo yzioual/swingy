@@ -7,8 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.util.Scanner;
 
 public class Main {
-
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		String mode = null;
 		if (args != null && args.length > 0) {
 			mode = args[0].trim().toLowerCase();
@@ -26,28 +25,28 @@ public class Main {
 		new GameController(initialMode).play();
 	}
 
-	void main() {
-		main(new String[0]);
-	}
+    private static String askMode() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("=== CHOOSE MODE ===");
+            System.out.println("1) Console");
+            System.out.println("2) GUI");
 
-	private static String askMode() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("=== CHOOSE MODE ===");
-		System.out.println("1) Console");
-		System.out.println("2) GUI");
-		while (true) {
-			System.out.print("Select mode (1 or 2) > ");
-			if (!scanner.hasNextLine()) {
-				return "console";
-			}
-			String input = scanner.nextLine().trim().toLowerCase();
-			if (input.equals("1") || input.equals("console") || input.equals("c")) {
-				return "console";
-			}
-			if (input.equals("2") || input.equals("gui") || input.equals("g")) {
-				return "gui";
-			}
-			System.out.println("Please type 1 for Console or 2 for GUI.");
-		}
-	}
+            while (true) {
+                System.out.print("Select mode (1 or 2) > ");
+                if (!scanner.hasNextLine()) {
+                    return "console";
+                }
+
+                String input = scanner.nextLine().trim().toLowerCase();
+                if (input.equals("1") || input.equals("console") || input.equals("c")) {
+                    return "console";
+                }
+
+                if (input.equals("2") || input.equals("gui") || input.equals("g")) {
+                    return "gui";
+                }
+                System.out.println("Please type 1 for Console or 2 for GUI.");
+            }
+        }
+    }
 }

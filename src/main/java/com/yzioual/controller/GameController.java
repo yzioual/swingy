@@ -54,23 +54,14 @@ public class GameController {
     private boolean running = true;
     private boolean gameOver = false;
 
-    public enum MoveResult { ERR, FIGHT, WIN, RUN, MOVED }
     public enum BattleOutcome { SMASH, WIN, LOST, ONGOING }
     public record BattleResult(BattleOutcome outcome, List<String> log) {
         public boolean didHeroWin() { return outcome == BattleOutcome.WIN || outcome == BattleOutcome.SMASH; }
         public boolean didHeroSmash() { return outcome == BattleOutcome.SMASH; }
     }
 
-    public GameController() {
-        this(ViewMode.CONSOLE, null, null);
-    }
-
     public GameController(ViewMode initialMode) {
         this(initialMode, null, null);
-    }
-
-    public GameController(ConsoleView consoleView, Hero hero) {
-        this(ViewMode.CONSOLE, consoleView, hero);
     }
 
     public GameController(ViewMode initialMode, ConsoleView consoleView, Hero hero) {

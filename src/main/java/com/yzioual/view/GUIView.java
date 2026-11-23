@@ -33,14 +33,12 @@ public class GUIView {
     private static final Color MUTED     = new Color(0x9A9AC0);
     private static final Color ACCENT    = new Color(0xFFC857);
     private static final Color ACCENT_DARK = new Color(0xD9A63A);
-    private static final Color HOVER     = new Color(0x30305A);
     private static final Color ERROR     = new Color(0xFF6B6B);
 
     private static final Font TITLE = font(Font.BOLD, 20f);
     private static final Font BOLD  = font(Font.BOLD, 14f);
     private static final Font REG   = font(Font.BOLD, 13f);
     private static final Font SMALL = font(Font.BOLD, 11.5f);
-
 
     private JFrame frame;
     private JLabel nameLabel;
@@ -66,10 +64,6 @@ public class GUIView {
 
     public void setSwitchListener(Runnable switchListener) {
         this.switchListener = switchListener;
-    }
-
-    public Runnable getSwitchListener() {
-        return switchListener;
     }
 
     private static Font font(int style, float size) {
@@ -106,7 +100,6 @@ public class GUIView {
         root.setBorder(new EmptyBorder(18, 22, 18, 22));
         frame.setContentPane(root);
 
-        // header
         nameLabel = label("Hero", TITLE, TEXT);
         classLabel = label(" ", REG, MUTED);
         dayLabel = label("Day 1", TITLE, TEXT);
@@ -148,12 +141,10 @@ public class GUIView {
                 .row(xpLabel, 4)
                 .row(gearLabel, 6), BorderLayout.NORTH);
 
-        // map
         mapPanel = new MapPanel();
         mapPanel.setBorder(new EmptyBorder(6, 0, 6, 0));
         root.add(mapPanel, BorderLayout.CENTER);
 
-        // bottom: status + d-pad
         statusLabel = label(" ", BOLD, TEXT);
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -358,10 +349,6 @@ public class GUIView {
                 new String[]{"Try again", "Quit"}, 1, null) == 0;
     }
 
-    public static Hero askCreateHero() {
-        return askCreateHero(null);
-    }
-
     public static Hero askCreateHero(Runnable onSwitchToConsole) {
         if (GraphicsEnvironment.isHeadless()) {
             return null;
@@ -532,11 +519,6 @@ public class GUIView {
     private static int dialog(Window owner, String title, String heading, JComponent body, String[] labels,
                               int cancelIdx, BooleanSupplier accept) {
         return dialog(owner, title, heading, body, labels, cancelIdx, accept, null, null);
-    }
-
-    private static int dialog(Window owner, String title, String heading, JComponent body, String[] labels,
-                              int cancelIdx, BooleanSupplier accept, Runnable onOpen) {
-        return dialog(owner, title, heading, body, labels, cancelIdx, accept, onOpen, null);
     }
 
     private static int dialog(Window owner, String title, String heading, JComponent body, String[] labels,
