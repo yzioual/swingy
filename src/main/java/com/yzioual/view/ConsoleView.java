@@ -7,9 +7,16 @@ import com.yzioual.model.map.Direction;
 import com.yzioual.model.map.Map;
 import com.yzioual.model.map.Position;
 
+import static com.yzioual.model.map.Direction.*;
+import static com.yzioual.view.ActionType.*;
+import static com.yzioual.view.ConsoleAction.*;
+
 import java.util.*;
 
 public class ConsoleView {
+    private static final String GUI_OR_CONSOLE = "Move (w/a/s/d or north/south/east/west), 'v' to switch to GUI, 'q' to quit > ";
+    private static final String WASD =
+        "Please type w, a, s, d or north, south, east, west (move), v (switch to GUI), or q (quit).";
     private static final String RESET = "\033[0m";
     private static final String DIM = "\033[2m";
     private static final String HERO = "\033[1;36m";
@@ -18,7 +25,7 @@ public class ConsoleView {
     private final boolean ansi;
 
     public ConsoleView() {
-        this.ansi = System.console() != null;
+        ansi = System.console() != null;
     }
 
     public void render(String depth, Hero hero, Map map, String status) {
@@ -47,48 +54,29 @@ public class ConsoleView {
         System.out.println(status.isEmpty() ? " " : status);
     }
 
-    public enum ActionType { MOVE, SWITCH_TO_GUI, QUIT }
-    public record ConsoleAction(ActionType type, Direction direction) {
-        public static ConsoleAction move(Direction d) { return new ConsoleAction(ActionType.MOVE, d); }
-        public static ConsoleAction switchToGui() { return new ConsoleAction(ActionType.SWITCH_TO_GUI, null); }
-        public static ConsoleAction quit() { return new ConsoleAction(ActionType.QUIT, null); }
-    }
-
     public ConsoleAction askMoveAction() {
         while (true) {
-            System.out.print("Move (w/a/s/d or north/south/east/west), 'v' to switch to GUI, 'q' to quit > ");
+            System.out.print(GUI_OR_CONSOLE);
             if (!scanner.hasNextLine()) {
-                return ConsoleAction.quit();
+                return quit();
             }
 
             String line = scanner.nextLine().trim().toLowerCase();
             switch (line) {
-                case "w", "up", "north", "n" -> {
-                    return ConsoleAction.move(Direction.NORTH);
-                }
-                case "d", "right", "east", "e" -> {
-                    return ConsoleAction.move(Direction.EAST);
-                }
-                case "s", "down", "south" -> {
-                    return ConsoleAction.move(Direction.SOUTH);
-                }
-                case "a", "left", "west" -> {
-                    return ConsoleAction.move(Direction.WEST);
-                }
-                case "v", "gui", "switch", "g" -> {
-                    return ConsoleAction.switchToGui();
-                }
-                case "q", "quit", "exit" -> {
-                    return ConsoleAction.quit();
-                }
-                default -> System.out.println("Please type w, a, s, d or north, south, east, west (move), v (switch to GUI), or q (quit).");
+                case "w", "up", "north", "n" -> { return move(NORTH); }
+                case "d", "right", "east", "e" -> { return move(EAST); }
+                case "s", "down", "south" -> { return move(SOUTH); }
+                case "a", "left", "west" -> { return move(WEST); }
+                case "v", "gui", "switch", "g" -> { return switchToGui(); }
+                case "q", "quit", "exit" -> { return quit(); }
+                default -> System.out.println(WASD);
             }
         }
     }
 
     public Optional<Direction> askMove() {
         ConsoleAction action = askMoveAction();
-        return action.type() == ActionType.MOVE ? Optional.of(action.direction()) : Optional.empty();
+        return action.type() == MOVE ? Optional.of(action.direction()) : Optional.empty();
     }
 
     public void showEncounter(String villainName, String catchphrase) {
@@ -195,8 +183,6 @@ public class ConsoleView {
         return shore ? color(DIM, ":") + " " : ". ";
     }
 
-
-
     private String color(String code, String text) {
         return ansi ? code + text + RESET : text;
     }
@@ -209,7 +195,6 @@ public class ConsoleView {
             System.out.println("\n".repeat(3) + "-".repeat(40));
         }
     }
-
 
     private OptionalInt readNumber(int max) {
         while (true) {
@@ -235,7 +220,7 @@ public class ConsoleView {
 
     public void showHero(Hero hero) {
         System.out.println("\nYour stats:");
-        System.out.println("    Name:      " + hero.getName());
+        System.out.println("   Name:      " + hero.getName());
         System.out.println("   Attack:     " + hero.getAttack());
         System.out.println("   Defense:    " + hero.getDefense());
         System.out.println("   Hit Points: " + hero.getHitPoints());
@@ -277,8 +262,6 @@ public class ConsoleView {
         errors.forEach(e -> System.out.println(color("\033[31m", "  x " + e)));
     }
 
-    public enum StartChoice { CREATE, SELECT, SWITCH_TO_GUI, QUIT }
-
     public StartChoice askStartOption(boolean hasSavedHeroes) {
         System.out.println("\n=== SWINGY: OCEAN DEPTHS ===");
         System.out.println("1) Create a new hero");
@@ -302,7 +285,9 @@ public class ConsoleView {
                 }
                 case "3", "v", "gui", "switch", "g" -> { return StartChoice.SWITCH_TO_GUI; }
                 case "0", "q", "quit", "exit" -> { return StartChoice.QUIT; }
-                default -> System.out.println("Please select 1, " + (hasSavedHeroes ? "2, " : "") + "3 or 0.");
+                default -> {
+                    System.out.println("Please select 1, "+(hasSavedHeroes?"2, " : "")+"3 or 0.");
+                }
             }
         }
     }

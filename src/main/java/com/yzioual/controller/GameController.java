@@ -10,9 +10,12 @@ import com.yzioual.model.map.Map;
 import com.yzioual.model.map.Position;
 import com.yzioual.model.villain.Villain;
 import com.yzioual.model.villain.VillainType;
+import com.yzioual.view.ConsoleAction;
 import com.yzioual.view.ConsoleView;
 import com.yzioual.view.GUIView;
+import com.yzioual.view.StartChoice;
 import com.yzioual.view.ViewMode;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
@@ -21,6 +24,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
+
+import static com.yzioual.controller.BattleOutcome.*;
 
 public class GameController {
     private static final int CHASE_RADIUS = 3;
@@ -53,12 +58,6 @@ public class GameController {
     private int day = 1;
     private boolean running = true;
     private boolean gameOver = false;
-
-    public enum BattleOutcome { SMASH, WIN, LOST, ONGOING }
-    public record BattleResult(BattleOutcome outcome, List<String> log) {
-        public boolean didHeroWin() { return outcome == BattleOutcome.WIN || outcome == BattleOutcome.SMASH; }
-        public boolean didHeroSmash() { return outcome == BattleOutcome.SMASH; }
-    }
 
     public GameController(ViewMode initialMode) {
         this(initialMode, null, null);
@@ -131,7 +130,7 @@ public class GameController {
 
     private void initHeroConsole() {
         List<Hero> savedHeroes = db.loadAllHeroes();
-        ConsoleView.StartChoice choice = consoleView.askStartOption(!savedHeroes.isEmpty());
+        StartChoice choice = consoleView.askStartOption(!savedHeroes.isEmpty());
         switch (choice) {
             case CREATE -> {
                 Optional<HeroType> type = consoleView.askForHero(HeroType.getListOfHeroTypes());
@@ -179,7 +178,8 @@ public class GameController {
             return;
         }
         List<Hero> savedHeroes = db.loadAllHeroes();
-        Hero created = GUIView.askSelectOrCreateHero(savedHeroes, () -> {
+
+        Hero created = this.guiView.askSelectOrCreateHero(savedHeroes, () -> {
             currentMode = ViewMode.CONSOLE;
         });
         if (created != null) {
@@ -204,9 +204,11 @@ public class GameController {
         if (hero != null) {
             db.saveHero(hero);
         }
+
         if (guiView != null) {
             guiView.hide();
         }
+
         currentMode = ViewMode.CONSOLE;
         synchronized (lock) {
             lock.notifyAll();
@@ -218,6 +220,7 @@ public class GameController {
             status = "Cannot switch to GUI: No display detected.";
             return;
         }
+
         if (hero != null) {
             db.saveHero(hero);
         }
@@ -229,14 +232,13 @@ public class GameController {
         String place = DEPTHS[Math.min(hero.getLevel(), DEPTHS.length) - 1];
         consoleView.render(place, hero, map, status);
 
-        ConsoleView.ConsoleAction action = consoleView.askMoveAction();
+        ConsoleAction action = consoleView.askMoveAction();
         switch (action.type()) {
             case MOVE -> applyMove(action.direction(), false);
             case SWITCH_TO_GUI -> switchToGui();
             case QUIT -> {
-                if (hero != null) {
-                    db.saveHero(hero);
-                }
+                if (hero != null) { db.saveHero(hero); }
+
                 System.out.println("\nSee you soon! Hero progress saved to database.");
                 running = false;
             }
@@ -319,7 +321,7 @@ public class GameController {
 
         boolean wantsFight;
         if (isGui) {
-            wantsFight = guiView.askFight(villain);
+            wantsFight = this.guiView.askFight(villain);
         } else {
             System.out.println("\nA " + villain.name() + " blocks your way!");
             System.out.println("\"" + villain.catchphrase() + "\"");
@@ -330,7 +332,7 @@ public class GameController {
             if (random.nextBoolean()) {
                 map.retreat();
                 this.status = "You slipped back to your previous cell";
-                return BattleOutcome.ONGOING;
+                return ONGOING;
             }
             if (isGui && guiView.getFrame() != null) {
                 JOptionPane.showMessageDialog(guiView.getFrame(),
@@ -349,11 +351,11 @@ public class GameController {
                 result.log().forEach(System.out::println);
                 consoleView.waitForEnter();
             }
-            return BattleOutcome.LOST;
+            return LOST;
         }
 
         map.removeVillainAt(map.getHeroPosition());
-        int xp = result.outcome() == BattleOutcome.SMASH
+        int xp = result.outcome() == SMASH
                 ? villain.XPRewards() * 3 / 2 : villain.XPRewards();
         int levelsGained = hero.gainExperience(xp);
         db.saveHero(hero);
@@ -385,15 +387,15 @@ public class GameController {
         }
 
         if (isOnBorder(map)) {
-            return BattleOutcome.WIN;
+            return WIN;
         }
-        return BattleOutcome.ONGOING;
+        return ONGOING;
     }
 
     private void handleShoreReached(boolean isGui) {
         db.saveHero(hero);
         if (isGui) {
-            boolean continueDiving = guiView.showShore(day, hero);
+            boolean continueDiving = this.guiView.showShore(day, hero);
             if (continueDiving) {
                 day++;
                 startDay();
@@ -422,7 +424,7 @@ public class GameController {
         gameOver = true;
         db.saveHero(hero);
         if (isGui) {
-            boolean retry = guiView.showGameOver();
+            boolean retry = this.guiView.showGameOver();
             if (retry) {
                 gameOver = false;
                 day = 1;
@@ -552,9 +554,9 @@ public class GameController {
             }
         }
         if (heroWins < ROUNDS_TO_WIN) {
-            return new BattleResult(BattleOutcome.LOST, log);
+            return new BattleResult(LOST, log);
         }
-        return new BattleResult(villainWins == 0 ? BattleOutcome.SMASH : BattleOutcome.WIN, log);
+        return new BattleResult(villainWins == 0 ? SMASH : WIN, log);
     }
 
     public Hero getHero() { return hero; }
