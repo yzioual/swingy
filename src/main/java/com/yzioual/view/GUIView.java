@@ -86,7 +86,6 @@ public class GUIView {
         g.fillRect(x + 2, y + h - 4, w - 4, 2);
     }
 
-
     private void initUI() {
         frame = new JFrame("Swingy - Ocean Depths");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

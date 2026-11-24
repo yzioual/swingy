@@ -56,23 +56,23 @@ public class ConsoleView {
 
     public ConsoleAction askMoveAction() {
         while (true) {
-            System.out.print("Move (w/a/s/d), 'v' to switch to GUI, 'q' to quit > ");
+            System.out.print("Move (w/a/s/d or north/south/east/west), 'v' to switch to GUI, 'q' to quit > ");
             if (!scanner.hasNextLine()) {
                 return ConsoleAction.quit();
             }
 
             String line = scanner.nextLine().trim().toLowerCase();
             switch (line) {
-                case "w", "up" -> {
+                case "w", "up", "north", "n" -> {
                     return ConsoleAction.move(Direction.NORTH);
                 }
-                case "d", "right" -> {
+                case "d", "right", "east", "e" -> {
                     return ConsoleAction.move(Direction.EAST);
                 }
-                case "s", "down" -> {
+                case "s", "down", "south" -> {
                     return ConsoleAction.move(Direction.SOUTH);
                 }
-                case "a", "left" -> {
+                case "a", "left", "west" -> {
                     return ConsoleAction.move(Direction.WEST);
                 }
                 case "v", "gui", "switch", "g" -> {
@@ -81,7 +81,7 @@ public class ConsoleView {
                 case "q", "quit", "exit" -> {
                     return ConsoleAction.quit();
                 }
-                default -> System.out.println("Please type w, a, s, d (move), v (switch to GUI), or q (quit).");
+                default -> System.out.println("Please type w, a, s, d or north, south, east, west (move), v (switch to GUI), or q (quit).");
             }
         }
     }
@@ -109,6 +109,19 @@ public class ConsoleView {
     public void showShoreReached(Hero hero) {
         System.out.println("\nYou reached the shore with your fish! Your family eats tonight.");
         showHero(hero);
+    }
+
+    public boolean askContinueNextMission(int nextDay) {
+        while (true) {
+            System.out.print("\nMission complete! Ready to dive into Day " + nextDay + "? (y/n) > ");
+            if (!scanner.hasNextLine()) {
+                return false;
+            }
+            String line = scanner.nextLine().trim().toLowerCase();
+            if (line.equals("y") || line.equals("yes")) return true;
+            if (line.equals("n") || line.equals("no")) return false;
+            System.out.println("Please type y or n.");
+        }
     }
 
     public boolean askRetry() {

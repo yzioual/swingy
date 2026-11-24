@@ -68,11 +68,26 @@ public class DatabaseManager {
             List<Hero> dbHeroes = loadHeroesFromDatabase();
             List<Hero> fileHeroes = loadHeroesFromFile();
 
-            // Import any heroes from file into DB
-            for (Hero fh : fileHeroes) {
-                boolean inDb = dbHeroes.stream().anyMatch(h -> h.getName().equalsIgnoreCase(fh.getName()));
-                if (!inDb) {
+            boolean fileIsNewer = false;
+            if (Files.exists(filePath)) {
+                Path dbPath = Paths.get("swingy.db");
+                if (!Files.exists(dbPath) || Files.getLastModifiedTime(filePath).toMillis() >= Files.getLastModifiedTime(dbPath).toMillis()) {
+                    fileIsNewer = true;
+                }
+            }
+
+            if (fileIsNewer && !fileHeroes.isEmpty()) {
+                // External edits were made to text file, update database
+                for (Hero fh : fileHeroes) {
                     saveHeroToDatabase(fh);
+                }
+            } else {
+                // Import any heroes from file into DB
+                for (Hero fh : fileHeroes) {
+                    boolean inDb = dbHeroes.stream().anyMatch(h -> h.getName().equalsIgnoreCase(fh.getName()));
+                    if (!inDb) {
+                        saveHeroToDatabase(fh);
+                    }
                 }
             }
 

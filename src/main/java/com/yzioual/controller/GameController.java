@@ -408,9 +408,13 @@ public class GameController {
         } else {
             System.out.println("\nYou reached the shore with your fish! Your family eats tonight.");
             consoleView.showHero(hero);
-            consoleView.waitForEnter();
-            day++;
-            startDay();
+            if (consoleView.askContinueNextMission(day + 1)) {
+                day++;
+                startDay();
+            } else {
+                System.out.println("\nWell done! Hero progress saved.");
+                running = false;
+            }
         }
     }
 

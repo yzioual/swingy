@@ -76,8 +76,11 @@ public class Hero {
     }
 
     private static int bonus(Artifact a) { return a == null ? 0 : a.bonus(); }
+    @Min(value = 0, message = "Attack cannot be negative")
     public int getAttack()     { return heroType.attackAt(level) + bonus(weapon); }
+    @Min(value = 0, message = "Defense cannot be negative")
     public int getDefense()    { return heroType.defenseAt(level) + bonus(armor); }
+    @Min(value = 1, message = "Hit points must be at least 1")
     public int getHitPoints()  { return heroType.hitPointsAt(level) + bonus(helm); }
     public String getName()          { return name; }
     public HeroType getHeroType()  { return heroType; }
