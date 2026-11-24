@@ -13,7 +13,8 @@ public enum VillainType {
     private final int power;
     private final String catchphrase;
 
-    VillainType( String name, int attack,  int defense, int hitPoints, int power, String catchphrase) {
+    VillainType(String name, int attack, int defense, int hitPoints, int power,
+            String catchphrase) {
         this.name = name;
         this.attack = attack;
         this.defense = defense;
@@ -22,22 +23,10 @@ public enum VillainType {
         this.catchphrase = catchphrase;
     }
 
-    public String getName() {
-        return this.name;
-    }
-    public int getAttack() {
-        return this.attack;
-    }
-    public String getCatchphrase() {
-        return this.catchphrase;
-    }
-    public int getDefense() {
-        return this.defense;
-    }
-    public int getHitPoints() {
-        return this.hitPoints;
-    }
-    public int getPower() {
-        return this.power;
-    }
+    public String getName() { return this.name; }
+    public int getAttack() { return this.attack; }
+    public String getCatchphrase() { return this.catchphrase; }
+    public int getDefense() { return this.defense; }
+    public int getHitPoints() { return this.hitPoints; }
+    public int getPower() { return this.power; }
 }

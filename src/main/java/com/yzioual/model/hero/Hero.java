@@ -1,6 +1,5 @@
 package com.yzioual.model.hero;
 
-import com.yzioual.model.villain.Villain;
 import com.yzioual.model.artifact.Artifact;
 import com.yzioual.model.artifact.ArtifactType;
 import jakarta.validation.ConstraintViolation;

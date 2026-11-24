@@ -7,7 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.util.Scanner;
 
 public class Main {
-	public static void main(String[] args) {
+	void main(String[] args) {
 		String mode = null;
 		if (args != null && args.length > 0) {
 			String arg = args[0].trim().toLowerCase();
@@ -20,11 +20,15 @@ public class Main {
 			}
 		}
 
-		if (mode == null) {
-			mode = askMode();
-		}
+		if (mode == null) mode = askMode();
 
-		ViewMode initialMode = "gui".equals(mode) ? ViewMode.GUI : ViewMode.CONSOLE;
+        ViewMode initialMode = null;
+        if ("gui".equals(mode)) {
+		    initialMode = ViewMode.GUI;
+        } else {
+            initialMode = ViewMode.CONSOLE;
+        }
+
 		if (initialMode == ViewMode.GUI && GraphicsEnvironment.isHeadless()) {
 			System.out.println("No display detected (headless environment). Falling back to console mode.");
 			initialMode = ViewMode.CONSOLE;
@@ -33,6 +37,7 @@ public class Main {
 		new GameController(initialMode).play();
 	}
 
+    @SuppressWarnings("resource")
     private static String askMode() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("=== CHOOSE MODE ===");

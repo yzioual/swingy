@@ -4,7 +4,7 @@ import com.yzioual.database.DatabaseManager;
 import com.yzioual.model.artifact.Artifact;
 import com.yzioual.model.hero.Hero;
 import com.yzioual.model.hero.HeroType;
-import com.yzioual.model.hero.Passive;
+import com.yzioual.model.hero.PassiveSpecialEffect;
 import com.yzioual.model.map.Direction;
 import com.yzioual.model.map.Map;
 import com.yzioual.model.map.Position;
@@ -518,7 +518,7 @@ public class GameController {
     }
 
     private BattleResult fight() {
-        Passive passive = hero.getHeroType().getPassive();
+        PassiveSpecialEffect passive = hero.getHeroType().getPassiveSpecialEffect();
         List<String> log = new ArrayList<>();
         int heroWins = 0, villainWins = 0, round = 0;
         boolean wetSuitUsed = false;
@@ -531,11 +531,11 @@ public class GameController {
             double villainScore = villain.attack() + villain.defense() / 2.0
                     + villain.hitPoints() / 10.0 + r.nextInt(LUCK + 1);
 
-            if (passive == Passive.PERFECT_AIM && r.nextInt(100) < AIM_CHANCE) {
+            if (passive == PassiveSpecialEffect.PERFECT_AIM && r.nextInt(100) < AIM_CHANCE) {
                 heroScore += AIM_BONUS;
                 log.add("  Perfect Aim! Your spear finds its mark.");
             }
-            if (passive == Passive.LAST_BREATH && villainWins >= 1) {
+            if (passive == PassiveSpecialEffect.LAST_BREATH && villainWins >= 1) {
                 heroScore += hero.getAttack() * 0.3;
                 log.add("  Last Breath! Your arms surge with desperate strength.");
             }
@@ -543,7 +543,7 @@ public class GameController {
             if (heroScore >= villainScore) {
                 heroWins++;
                 log.add("Round " + round + ": you win the round.");
-            } else if (passive == Passive.THICK_WETSUIT && !wetSuitUsed) {
+            } else if (passive == PassiveSpecialEffect.THICK_WETSUIT && !wetSuitUsed) {
                 wetSuitUsed = true;
                 log.add("Round " + round + ": the blow hits... your wetsuit absorbs it!");
             } else {

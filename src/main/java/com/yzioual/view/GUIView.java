@@ -862,7 +862,7 @@ public class GUIView {
                 g.setColor(MUTED);
                 g.drawString("ATK " + t.getAttack() + "  ·  DEF " + t.getDefense() + "  ·  HP " + t.getHitPoints(),
                         44, (float) (cy + 13));
-                String passive = pretty(t.getPassive().name());
+                String passive = pretty(t.getPassiveSpecialEffect().name());
                 g.drawString(passive, w - 16 - g.getFontMetrics().stringWidth(passive), (float) (cy + 13));
             }
             g.dispose();

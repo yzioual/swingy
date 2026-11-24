@@ -3,40 +3,20 @@ package com.yzioual.model.hero;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yzioual.model.hero.PassiveSpecialEffect.*;
+
 public enum HeroType {
-    SPEARFISHER(
-            "Spearfisher",
-            Passive.PERFECT_AIM,
-            "Perfect Aim: 15% chance of a double-damage hit",
-            13,
-            8,
-            110,
-            3,
-            2,
-            12),
+    SPEARFISHER("Spearfisher", PERFECT_AIM, "Perfect Aim: 15% chance of a double-damage hit",
+            13, 8, 110, 3, 2, 12),
 
-    OLD_FISHERMAN(
-            "Old Fisherman",
-            Passive.THICK_WETSUIT,
-            "Thick Wetsuit: ignores the first hit of each battle",
-            10,
-            11,
-            125,
-            2,
-            3,
-            14),
+    OLD_FISHERMAN("Old Fisherman", THICK_WETSUIT,
+            "Thick Wetsuit: ignores the first hit of each battle", 10, 11, 125, 2, 3, 14),
 
-    FREE_DIVER("Free Diver", Passive.LAST_BREATH,
-            "Last Breath: +30% damage below 50% HP",
-            15,
-            5,
-            90,
-            4,
-            1,
-            10);
+    FREE_DIVER("Free Diver", LAST_BREATH, "Last Breath: +30% damage below 50% HP",
+            15, 5, 90, 4, 1, 10);
 
     private final String name;
-    private final Passive passive;
+    private final PassiveSpecialEffect passive;
     private final String passiveDescription;
     private final int hitPoints;
     private final int defense;
@@ -46,7 +26,7 @@ public enum HeroType {
     private final int hitPointsGrowth;
 
     HeroType(String name,
-             Passive passive,
+             PassiveSpecialEffect passive,
              String passiveDescription,
              int attack,
              int defense,
@@ -71,7 +51,7 @@ public enum HeroType {
     public int hitPointsAt(int level) { return hitPoints + (level - 1) * hitPointsGrowth; }
 
     public String getName() { return name; }
-    public Passive getPassive() { return passive; }
+    public PassiveSpecialEffect getPassiveSpecialEffect() { return passive; }
     public String getPassiveDescription() { return passiveDescription; }
     public int getAttack() { return attack; }
     public int getDefense() { return defense; }

@@ -27,3 +27,8 @@ replay_pid*
 .idea
 target/
 *.db
+
+.txt
+.classpath
+.project
+.settings
