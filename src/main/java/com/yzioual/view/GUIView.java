@@ -32,8 +32,6 @@ public class GUIView {
     private Consumer<Direction> moveListener;
     private Runnable switchListener;
 
-    public static DialogHelper dialogHelper;
-
     public GUIView() {
         if (!GraphicsEnvironment.isHeadless()) { /* safe better than sorry */
             initUI();
@@ -42,11 +40,6 @@ public class GUIView {
 
     public Boolean askFight(Villain villain) {
         return DialogHelper.askFight(villain, this.frame);
-    }
-
-    public void showBattleResultJFrame(List<String> log,
-            boolean won, boolean smash, int xp, int currentLevel, int levelsGained) {
-        DialogHelper.showBattleResult(this.frame, log, won, smash, xp, currentLevel, levelsGained);
     }
 
     public Boolean askEquip(Artifact dropped, Artifact current) {
@@ -80,13 +73,11 @@ public class GUIView {
 
     private void initUI() {
         frame = new JFrame("Swingy - Ocean Depths");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setIconImage(Utilities.icon());
         frame.setSize(620, 800);
         frame.setMinimumSize(new Dimension(520, 680));
         frame.setLocationRelativeTo(null);
-
-        dialogHelper = new DialogHelper();
 
         statPanel = new StatPanel();
         statPanel.setOpaque(false);

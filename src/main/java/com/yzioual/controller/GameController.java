@@ -433,6 +433,12 @@ public class GameController {
                 if (hero != null) {
                     startDay();
                     renderGui();
+                } else {
+                    running = false;
+                    guiView.dispose();
+                    synchronized (lock) {
+                        lock.notifyAll();
+                    }
                 }
             } else {
                 running = false;

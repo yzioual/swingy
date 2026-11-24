@@ -11,7 +11,7 @@ public class Main {
     private static final String HEADLESS_ENV = "No display detected (headless environment)."
         + "Falling back to console mode.";
 
-    void main(String[] args) {
+    public static void main(String[] args) {
 		String mode = null;
         try {
             if (args != null && args.length > 0) {
@@ -51,7 +51,7 @@ public class Main {
         }
 	}
 
-    private boolean hasGUIEnvWell(ViewMode initialMode) {
+    private static boolean hasGUIEnvWell(ViewMode initialMode) {
         return initialMode == ViewMode.GUI && GraphicsEnvironment.isHeadless();
     }
 }
